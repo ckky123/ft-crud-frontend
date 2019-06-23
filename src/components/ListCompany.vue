@@ -6,6 +6,7 @@
                 <ul>
                     <li>year = {{com.yearFounded}}</li>
                     <li>Revenue = {{com.revenue}}</li>
+                    <li> UUID = {{com._id}}</li>
 
                     </ul>
                     <br/>
@@ -18,10 +19,10 @@
     <input v-model="name" placeholder="Name"/> <br/>
     <input v-model="yearFounded" placeholder="Year"/><br/> 
     <input v-model="revenue" placeholder="revenue"/> <br/>
-    <button @click="getCompany">Get record</button>
-    <button @click="updateCompany">Update record</button>
-    <button @click="postCompany">Add record</button>
-    <button @click="deleteCompany">Delete record</button>
+    <button @click="postCompany">Create company</button>
+    <button @click="getCompany">Read company</button>
+    <button @click="updateCompany">Update company</button>
+    <button @click="deleteCompany">Delete company</button>
 
     </div>
 </template>
@@ -30,7 +31,7 @@
 import axios from 'axios'
 
     const api = axios.create({
-      baseURL: 'http://localhost:4000',
+      baseURL: 'https://gentle-fjord-95536.herokuapp.com',
       headers: { 'Content-Type': 'application/json' }
     })
 export default {
@@ -50,6 +51,7 @@ export default {
             "revenue" : this.revenue
           }
           await api.put(`/company/${this.id}`, body)
+          this.getCompanies()
       },
       async postCompany(){
           const body = {
@@ -58,9 +60,14 @@ export default {
             "revenue" : this.revenue
           }
           await api.post(`/company`, body)
+          this.getCompanies()
       },
       async deleteCompany(){
           await api.delete(`/company/${this.id}`)
+          this.getCompanies()
+      },
+      async getCompanies(){
+        this.company = await api.get('/companies')
       }
   },
   data () {
@@ -73,7 +80,7 @@ export default {
     }
   },
   async created () {
-    this.company = await api.get('/company')
+    this.getCompanies()
   }
 }
 </script>
